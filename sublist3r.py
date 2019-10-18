@@ -16,6 +16,7 @@ import threading
 import socket
 import json
 from collections import Counter
+from bs4 import BeautifulSoup
 
 # external modules
 from subbrute import subbrute
@@ -636,8 +637,8 @@ class DNSdumpster(enumratorBaseThreaded):
         return self.get_response(resp)
 
     def get_csrftoken(self, resp):
-        csrf_regex = re.compile("<input type='hidden' name='csrfmiddlewaretoken' value='(.*?)' />", re.S)
-        token = csrf_regex.findall(resp)[0]
+        soup = BeautifulSoup(resp,features="html.parser")
+        token = soup.find('input', {'name': 'csrfmiddlewaretoken'}).get('value')
         return token.strip()
 
     def enumerate(self):
